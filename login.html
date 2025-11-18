@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - OASIS</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <style>
+        body {
+            background-color: #E0F7F4;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .auth-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 450px;
+            width: 100%;
+            padding: 40px;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .auth-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .auth-logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .auth-logo i {
+            font-size: 48px;
+            color: #00BFA5;
+        }
+
+        .auth-logo h1 {
+            font-size: 36px;
+            color: #1A202C;
+            font-weight: 700;
+        }
+
+        .auth-header p {
+            color: #64748B;
+            font-size: 16px;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #1A202C;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-wrapper i {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #64748B;
+            font-size: 20px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 14px 14px 14px 48px;
+            border: 2px solid #E0F7F4;
+            border-radius: 12px;
+            font-size: 15px;
+            transition: all 0.3s;
+            box-sizing: border-box;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #00BFA5;
+            box-shadow: 0 0 0 4px rgba(0, 191, 165, 0.1);
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 16px;
+            background-color:#00BFA5;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-login:hover {
+            background-color:#00897B;
+            box-shadow: 0 10px 30px rgba(0, 191, 165, 0.3);
+        }
+
+        .btn-login:active {
+            transform: translateY(0);
+        }
+
+        .btn-login:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .auth-footer {
+            text-align: center;
+            margin-top: 24px;
+            padding-top: 24px;
+            border-top: 1px solid #E0F7F4;
+        }
+
+        .auth-footer p {
+            color: #64748B;
+            font-size: 14px;
+        }
+
+        .auth-footer a {
+            color: #00BFA5;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+
+        .auth-footer a:hover {
+            color: #00796B;
+        }
+
+        .alert {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .alert.show {
+            display: block;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .alert-error {
+            background: #FEE;
+            color: #C53030;
+            border: 1px solid #FEB2B2;
+        }
+
+        .alert-success {
+            background: #E6FFFA;
+            color: #00796B;
+            border: 1px solid #81E6D9;
+        }
+
+        .spinner-small {
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-header">
+            <div class="auth-logo">
+                <i class='bx bx-water'></i>
+                <h1>OASIS</h1>
+            </div>
+            <p>Bem-vindo de volta! Faça login para continuar.</p>
+        </div>
+
+        <div id="alertBox" class="alert"></div>
+
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="email">E-mail</label>
+                <div class="input-wrapper">
+                    <i class='bx bx-envelope'></i>
+                    <input type="email" id="email" name="email" placeholder="seu@email.com" required autofocus>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Senha</label>
+                <div class="input-wrapper">
+                    <i class='bx bx-lock-alt'></i>
+                    <input type="password" id="password" name="password" placeholder="••••••••" required>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-login" id="loginBtn">
+                <i class='bx bx-log-in'></i>
+                <span>Entrar</span>
+            </button>
+        </form>
+
+        <div class="auth-footer">
+            <p>Não tem uma conta? <a href="signup.html">Cadastre-se aqui</a></p>
+        </div>
+    </div>
+
+    <script>
+        // Limpa localStorage inválido (usuário sem ID)
+        (function() {
+            const user = localStorage.getItem('oasis_user');
+            if (user) {
+                try {
+                    const parsed = JSON.parse(user);
+                    if (!parsed.id || parsed.id === null || parsed.id === undefined) {
+                        console.warn('⚠️ Usuário inválido detectado (sem ID). Limpando localStorage...');
+                        localStorage.removeItem('oasis_user');
+                        localStorage.removeItem('oasis_token');
+                    }
+                } catch (e) {
+                    console.warn('⚠️ Erro ao validar usuário. Limpando localStorage...');
+                    localStorage.removeItem('oasis_user');
+                    localStorage.removeItem('oasis_token');
+                }
+            }
+        })();
+    </script>
+    <script src="api.js"></script>
+    <script src="auth.js"></script>
+</body>
+</html>
