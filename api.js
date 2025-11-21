@@ -53,13 +53,15 @@ const API = {
             const data = await response.json();
             
             if (!response.ok) {
-                throw new Error(data.erro || 'Erro na requisição');
+                // Retorna o erro do servidor sem lançar exceção
+                return { success: false, error: data.erro || data.error || 'Erro desconhecido' };
             }
             
             return data;
         } catch (error) {
+            // Erro de rede ou de conexão
             console.error('API Error:', error);
-            return { success: false, error: error.message };
+            return { success: false, error: 'Erro na requisição. Verifique sua conexão.' };
         }
     },
     
