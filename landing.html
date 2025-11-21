@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="OASIS - Transforme seus hábitos, transforme sua vida. O app definitivo para rastrear hábitos e alcançar seus objetivos.">
+    <title>OASIS - Gerenciador de Hábitos</title>
+    <link rel="stylesheet" href="landing.css">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <a href="#" class="nav-logo">
+                <i class='bx bx-water'></i>
+                <span>OASIS</span>
+            </a>
+            <div class="nav-menu" id="navMenu">
+                <a href="#features" class="nav-link">Recursos</a>
+                <a href="#benefits" class="nav-link">Benefícios</a>
+                <a href="#testimonials" class="nav-link">Depoimentos</a>
+                <a href="login.html" class="nav-link btn-nav">Entrar</a>
+            </div>
+            <button class="nav-toggle" id="navToggle" aria-label="Menu">
+                <i class='bx bx-menu'></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero" id="hero">
+        <div class="hero-container">
+            <div class="hero-content" data-animate="fade-right">
+                <span class="hero-badge">
+                    <i class='bx bx-check-circle'></i>
+                    Gratuito para começar
+                </span>
+                <h1 class="hero-title">
+                    Transforme seus <span class="gradient-text">hábitos</span>, transforme sua <span class="gradient-text">vida</span>
+                </h1>
+                <p class="hero-description">
+                    O OASIS é o seu oásis pessoal para construir rotinas saudáveis. Rastreie hábitos, registre reflexões no diário e acompanhe seu progresso com estatísticas inteligentes.
+                </p>
+                <div class="hero-buttons">
+                    <a href="signup.html" class="btn btn-primary btn-lg">
+                        <i class='bx bx-rocket'></i>
+                        Começar Agora
+                    </a>
+                    <a href="#features" class="btn btn-outline btn-lg">
+                        <i class='bx bx-play-circle'></i>
+                        Saiba Mais
+                    </a>
+                </div>
+                <div class="hero-stats">
+                    <div class="stat-item">
+                        <span class="stat-number" data-count="10">0</span>
+                        <span class="stat-label">Usuários ativos</span>
+                    </div>
+                    <div class="stat-divider"></div>
+                    <div class="stat-item">
+                        <span class="stat-number" data-count="50">0</span>
+                        <span class="stat-label">Hábitos criados</span>
+                    </div>
+                    <div class="stat-divider"></div>
+                    <div class="stat-item">
+                        <span class="stat-number" data-count="100">0</span>
+                        <span class="stat-label">% Satisfação</span>
+                    </div>
+                </div>
+            </div>
+            <div class="hero-mockup" data-animate="fade-left">
+                <div class="mockup-wrapper">
+                    <div class="mockup-phone">
+                        <div class="phone-notch"></div>
+                        <div class="phone-screen">
+                            <!-- Substitua pelo seu print: 376 × 790 -->
+                            <img src="/img/habits-mock.png" alt="OASIS App Preview" class="screen-image">
+                        </div>
+                    </div>
+                    <div class="mockup-glow"></div>
+                </div>
+                <div class="floating-card card-1" data-animate="float">
+                    <i class='bx bx-check-circle'></i>
+                    <span>Hábito concluído!</span>
+                </div>
+                <div class="floating-card card-2" data-animate="float-delay">
+                    <i class='bx bx-trending-up'></i>
+                    <span>7 dias de sequência</span>
+                </div>
+            </div>
+        </div>
+        <div class="hero-wave">
+            <svg viewBox="0 0 1440 120" preserveAspectRatio="none">
+                <path d="M0,64L80,69.3C160,75,320,85,480,80C640,75,800,53,960,48C1120,43,1280,53,1360,58.7L1440,64L1440,120L1360,120C1280,120,1120,120,960,120C800,120,640,120,480,120C320,120,160,120,80,120L0,120Z"></path>
+            </svg>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <div class="container">
+            <div class="section-header" data-animate="fade-up">
+                <span class="section-badge">Recursos</span>
+                <h2 class="section-title">Tudo que você precisa para <span class="gradient-text">evoluir</span></h2>
+                <p class="section-description">Ferramentas poderosas e intuitivas para ajudar você a construir hábitos duradouros.</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card" data-animate="fade-up" data-delay="100">
+                    <div class="feature-icon">
+                        <i class='bx bx-list-check'></i>
+                    </div>
+                    <h3>Gestão de Hábitos</h3>
+                    <p>Crie, organize e acompanhe seus hábitos diários, semanais ou mensais com facilidade.</p>
+                </div>
+                <div class="feature-card" data-animate="fade-up" data-delay="200">
+                    <div class="feature-icon">
+                        <i class='bx bx-book-heart'></i>
+                    </div>
+                    <h3>Diário Pessoal</h3>
+                    <p>Registre suas reflexões diárias e acompanhe sua jornada de desenvolvimento pessoal.</p>
+                </div>
+                <div class="feature-card" data-animate="fade-up" data-delay="300">
+                    <div class="feature-icon">
+                        <i class='bx bx-bar-chart-alt-2'></i>
+                    </div>
+                    <h3>Estatísticas Inteligentes</h3>
+                    <p>Visualize seu progresso com gráficos e métricas que mostram sua evolução.</p>
+                </div>
+                <div class="feature-card" data-animate="fade-up" data-delay="400">
+                    <span class="feature-badge">Em breve</span>
+                    <div class="feature-icon">
+                        <i class='bx bx-bell'></i>
+                    </div>
+                    <h3>Lembretes Personalizados</h3>
+                    <p>Nunca esqueça um hábito com notificações configuráveis no horário ideal.</p>
+                </div>
+                <div class="feature-card" data-animate="fade-up" data-delay="500">
+                    <div class="feature-icon">
+                        <i class='bx bx-category'></i>
+                    </div>
+                    <h3>Categorias Flexíveis</h3>
+                    <p>Organize seus hábitos por categorias como saúde, trabalho, estudos e mais.</p>
+                </div>
+                <div class="feature-card" data-animate="fade-up" data-delay="600">
+                    <div class="feature-icon">
+                        <i class='bx bx-devices'></i>
+                    </div>
+                    <h3>Acesso em Qualquer Lugar</h3>
+                    <p>Use no celular, tablet ou computador. Seus dados sempre sincronizados.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Benefits Section -->
+    <section class="benefits" id="benefits">
+        <div class="container">
+            <div class="benefits-content">
+                <div class="benefits-text" data-animate="fade-right">
+                    <span class="section-badge">Por que OASIS?</span>
+                    <h2 class="section-title">Construa a melhor versão de <span class="gradient-text">você mesmo</span></h2>
+                    <div class="benefits-list">
+                        <div class="benefit-item">
+                            <div class="benefit-check">
+                                <i class='bx bx-check'></i>
+                            </div>
+                            <div class="benefit-info">
+                                <h4>Aumente sua produtividade</h4>
+                                <p>Hábitos consistentes levam a resultados extraordinários.</p>
+                            </div>
+                        </div>
+                        <div class="benefit-item">
+                            <div class="benefit-check">
+                                <i class='bx bx-check'></i>
+                            </div>
+                            <div class="benefit-info">
+                                <h4>Reduza o estresse</h4>
+                                <p>Uma rotina organizada traz paz e clareza mental.</p>
+                            </div>
+                        </div>
+                        <div class="benefit-item">
+                            <div class="benefit-check">
+                                <i class='bx bx-check'></i>
+                            </div>
+                            <div class="benefit-info">
+                                <h4>Alcance suas metas</h4>
+                                <p>Pequenos passos diários levam a grandes conquistas.</p>
+                            </div>
+                        </div>
+                        <div class="benefit-item">
+                            <div class="benefit-check">
+                                <i class='bx bx-check'></i>
+                            </div>
+                            <div class="benefit-info">
+                                <h4>Mantenha a motivação</h4>
+                                <p>Visualize seu progresso e celebre cada vitória.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="benefits-visual" data-animate="fade-left">
+                    <div class="visual-card">
+                        <div class="progress-ring">
+                            <svg viewBox="0 0 100 100">
+                                <circle class="ring-bg" cx="50" cy="50" r="45"/>
+                                <circle class="ring-progress" cx="50" cy="50" r="45"/>
+                            </svg>
+                            <div class="progress-content">
+                                <span class="progress-number">87%</span>
+                                <span class="progress-label">Conclusão</span>
+                            </div>
+                        </div>
+                        <div class="streak-badge">
+                            <i class='bx bx-flame'></i>
+                            <span>21 dias de sequência!</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section class="testimonials" id="testimonials">
+        <div class="container">
+            <div class="section-header" data-animate="fade-up">
+                <span class="section-badge">Depoimentos</span>
+                <h2 class="section-title">O que nossos usuários <span class="gradient-text">dizem</span></h2>
+            </div>
+            <div class="testimonials-grid">
+                <div class="testimonial-card" data-animate="fade-up" data-delay="100">
+                    <div class="testimonial-stars">
+                        <i class='bx bxs-star'></i>
+                        <i class='bx bxs-star'></i>
+                        <i class='bx bxs-star'></i>
+                        <i class='bx bxs-star'></i>
+                        <i class='bx bxs-star'></i>
+                    </div>
+                    <p class="testimonial-text">"O OASIS mudou completamente minha rotina. Em 3 meses, consegui criar 5 hábitos saudáveis que mantive até hoje."</p>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">MA</div>
+                        <div class="author-info">
+                            <span class="author-name">Maria Antônia</span>
+                            <span class="author-role">Designer</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card featured" data-animate="fade-up" data-delay="200">
+                    <div class="testimonial-stars">
+                        <i class='bx bxs-star'></i>
+                        <i class='bx bxs-star'></i>
+                        <i class='bx bxs-star'></i>
+                        <i class='bx bxs-star'></i>
+                        <i class='bx bxs-star'></i>
+                    </div>
+                    <p class="testimonial-text">"Simplesmente o melhor app de hábitos que já usei. Interface linda, fácil de usar e as estatísticas são incríveis para manter a motivação!"</p>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">PH</div>
+                        <div class="author-info">
+                            <span class="author-name">Pedro Henrique</span>
+                            <span class="author-role">Desenvolvedor</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card" data-animate="fade-up" data-delay="300">
+                    <div class="testimonial-stars">
+                        <i class='bx bxs-star'></i>
+                        <i class='bx bxs-star'></i>
+                        <i class='bx bxs-star'></i>
+                        <i class='bx bxs-star'></i>
+                        <i class='bx bxs-star'></i>
+                    </div>
+                    <p class="testimonial-text">"O diário junto com os hábitos foi um diferencial. Consigo refletir sobre minha evolução e isso me mantém focada."</p>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">CS</div>
+                        <div class="author-info">
+                            <span class="author-name">Camila Santos</span>
+                            <span class="author-role">Psicóloga</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta" id="cta">
+        <div class="container">
+            <div class="cta-content" data-animate="fade-up">
+                <h2>Comece sua jornada <span class="gradient-text">hoje</span></h2>
+                <p>Junte-se a milhares de pessoas que estão transformando suas vidas com o OASIS.</p>
+                <div class="cta-buttons">
+                    <a href="signup.html" class="btn btn-white btn-lg">
+                        <i class='bx bx-user-plus'></i>
+                        Criar Conta Grátis
+                    </a>
+                </div>
+                <span class="cta-note">Não precisa de cartão de crédito</span>
+            </div>
+        </div>
+        <div class="cta-shapes">
+            <div class="shape shape-1"></div>
+            <div class="shape shape-2"></div>
+            <div class="shape shape-3"></div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <a href="#" class="footer-logo">
+                        <i class='bx bx-water'></i>
+                        <span>OASIS</span>
+                    </a>
+                    <p>Seu oásis pessoal para construir hábitos saudáveis e transformar sua vida.</p>
+                    <div class="footer-social">
+                        <a href="https://www.instagram.com/abraao.sts_dev/" aria-label="Instagram" target="_blank"><i class='bx bxl-instagram'></i></a>
+                        <a href="https://www.linkedin.com/in/abraaosantosdev/" aria-label="LinkedIn" target="_blank"><i class='bx bxl-linkedin'></i></a>
+                        <a href="https://github.com/abraaosantosdeveloper" aria-label="GitHub" target="_blank"><i class='bx bxl-github'></i></a>
+                    </div>
+                </div>
+                <div class="footer-links">
+                    <div class="footer-column">
+                        <h4>Produto</h4>
+                        <a href="#features">Recursos</a>
+                        <a href="#benefits">Benefícios</a>
+                    </div>
+                    <div class="footer-column">
+                        <h4>Fale conosco</h4>
+                        <a href="contato.html">Contato</a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 OASIS. Todos os direitos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="landing.js"></script>
+
+    <!-- Back to Top Button -->
+    <button class="back-to-top" id="backToTop" aria-label="Voltar ao topo">
+        <i class='bx bx-chevron-up'></i>
+    </button>
+</body>
+</html>
