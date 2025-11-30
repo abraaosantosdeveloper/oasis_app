@@ -27,7 +27,10 @@ const API_CONFIG = {
         JOURNAL: '/journal',
         JOURNAL_BY_ID: (id) => `/journal/${id}`,
         JOURNAL_BY_USER: (userId) => `/journal/user/${userId}`,
-        JOURNAL_BY_DATE: (userId, date) => `/journal/user/${userId}/date/${date}`
+        JOURNAL_BY_DATE: (userId, date) => `/journal/user/${userId}/date/${date}`,
+        
+        // Keep-alive
+        KEEP_ALIVE: '/keep-alive'
     }
 };
 
@@ -208,6 +211,14 @@ const API = {
     
     async deleteJournalEntry(id, userId) {
         return this.delete(API_CONFIG.ENDPOINTS.JOURNAL_BY_ID(id), { user_id: userId });
+    },
+    
+    // ========================================
+    // KEEP-ALIVE ENDPOINT
+    // ========================================
+    
+    async keepAlive() {
+        return this.get(API_CONFIG.ENDPOINTS.KEEP_ALIVE);
     }
 };
 

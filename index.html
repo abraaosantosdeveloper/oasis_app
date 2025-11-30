@@ -272,6 +272,75 @@
         </div>
     </div>
 
+    <!-- Modal for Logout Confirmation -->
+    <div class="modal" id="logoutModal" role="dialog" aria-modal="true" aria-labelledby="logoutModalTitle">
+        <div class="modal-content modal-small">
+            <div class="modal-header">
+                <h3 id="logoutModalTitle">Confirmar Saída</h3>
+                <button class="modal-close" id="closeLogoutModal" aria-label="Fechar modal">
+                    <i class='bx bx-x'></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Deseja realmente sair do sistema?</p>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" id="cancelLogout">Cancelar</button>
+                <button class="btn btn-danger" id="confirmLogout">
+                    <i class='bx bx-log-out'></i>
+                    Sair
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Delete Journal Entry -->
+    <div class="modal" id="deleteJournalModal" role="dialog" aria-modal="true" aria-labelledby="deleteJournalModalTitle">
+        <div class="modal-content modal-small">
+            <div class="modal-header">
+                <h3 id="deleteJournalModalTitle">Confirmar Exclusão</h3>
+                <button class="modal-close" id="closeDeleteJournalModal" aria-label="Fechar modal">
+                    <i class='bx bx-x'></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Tem certeza que deseja excluir esta entrada do diário? Esta ação não pode ser desfeita.</p>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" id="cancelDeleteJournal">Cancelar</button>
+                <button class="btn btn-danger" id="confirmDeleteJournal">
+                    <i class='bx bx-trash'></i>
+                    Excluir
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Edit Journal Entry -->
+    <div class="modal" id="editJournalModal" role="dialog" aria-modal="true" aria-labelledby="editJournalModalTitle">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="editJournalModalTitle">Editar Entrada</h3>
+                <button class="modal-close" id="closeEditJournalModal" aria-label="Fechar modal">
+                    <i class='bx bx-x'></i>
+                </button>
+            </div>
+            <form id="editJournalForm">
+                <div class="form-group">
+                    <label for="editJournalContent">Conteúdo *</label>
+                    <textarea id="editJournalContent" rows="8" required placeholder="Escreva suas reflexões..."></textarea>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" id="cancelEditJournal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class='bx bx-save'></i>
+                        Salvar Alterações
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>

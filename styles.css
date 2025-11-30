@@ -996,6 +996,31 @@ body {
 }
 
 /* ============================================
+   Journal Entry Actions
+   ============================================ */
+.journal-history-item {
+    position: relative;
+}
+
+.journal-entry-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-sm);
+}
+
+.journal-entry-actions {
+    display: flex;
+    gap: var(--spacing-xs);
+    opacity: 0;
+    transition: opacity var(--transition-base);
+}
+
+.journal-history-item:hover .journal-entry-actions {
+    opacity: 1;
+}
+
+/* ============================================
    Empty States
    ============================================ */
 .empty-state {

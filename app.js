@@ -12,6 +12,8 @@ const AppState = {
   categories: [],
   editingHabitId: null,
   deletingHabitId: null,
+  editingJournalId: null,
+  deletingJournalId: null,
   user: null, // Será carregado do localStorage
 };
 
@@ -50,12 +52,25 @@ const DOM = {
   // Modals
   habitModal: document.getElementById("habitModal"),
   deleteModal: document.getElementById("deleteModal"),
+  logoutModal: document.getElementById("logoutModal"),
+  deleteJournalModal: document.getElementById("deleteJournalModal"),
+  editJournalModal: document.getElementById("editJournalModal"),
   modalTitle: document.getElementById("modalTitle"),
   closeModal: document.getElementById("closeModal"),
   cancelModal: document.getElementById("cancelModal"),
   closeDeleteModal: document.getElementById("closeDeleteModal"),
   cancelDelete: document.getElementById("cancelDelete"),
   confirmDelete: document.getElementById("confirmDelete"),
+  closeLogoutModal: document.getElementById("closeLogoutModal"),
+  cancelLogout: document.getElementById("cancelLogout"),
+  confirmLogout: document.getElementById("confirmLogout"),
+  closeDeleteJournalModal: document.getElementById("closeDeleteJournalModal"),
+  cancelDeleteJournal: document.getElementById("cancelDeleteJournal"),
+  confirmDeleteJournal: document.getElementById("confirmDeleteJournal"),
+  closeEditJournalModal: document.getElementById("closeEditJournalModal"),
+  cancelEditJournal: document.getElementById("cancelEditJournal"),
+  editJournalForm: document.getElementById("editJournalForm"),
+  editJournalContent: document.getElementById("editJournalContent"),
 
   // Forms
   habitForm: document.getElementById("habitForm"),
@@ -274,6 +289,8 @@ const HabitsManager = {
 
       if (response.success) {
         AppState.habits = response.data;
+        // Verifica e reseta hábitos se necessário antes de renderizar
+        await this.checkAndResetHabits();
         this.render();
       } else {
         console.error("Erro ao carregar hábitos:", response.error);
@@ -284,6 +301,73 @@ const HabitsManager = {
       console.error("Erro ao carregar hábitos:", error);
       AppState.habits = [];
       this.render();
+    }
+  },
+
+  // Verifica se algum hábito precisa ser resetado baseado na data de criação
+  async checkAndResetHabits() {
+    const hoje = new Date();
+    hoje.setHours(0, 0, 0, 0);
+    
+    for (const habit of AppState.habits) {
+      // Só verifica hábitos que repetem e estão marcados como concluídos
+      if (!habit.repetir || !habit.completado || !habit.tipo_repeticao) {
+        continue;
+      }
+
+      // Pega a data de criação do hábito
+      const dataCriacao = new Date(habit.criado_em.split('T')[0] + 'T00:00:00');
+      
+      let shouldReset = false;
+      
+      switch (habit.tipo_repeticao) {
+        case 'diario':
+          // Para diários, verifica se já passou para o próximo dia
+          const ultimaAtualizacao = habit.atualizado_em ? new Date(habit.atualizado_em.split('T')[0] + 'T00:00:00') : dataCriacao;
+          if (hoje > ultimaAtualizacao) {
+            shouldReset = true;
+          }
+          break;
+          
+        case 'semanal':
+          // Para semanais, verifica se já passou 7 dias desde a data de criação
+          const diaDaSemana = dataCriacao.getDay(); // Dia da semana da criação (0-6)
+          const diaDaSemanaHoje = hoje.getDay();
+          
+          // Se o dia da semana atual é o mesmo da criação e já passou pelo menos 7 dias
+          if (diaDaSemanaHoje === diaDaSemana && hoje > dataCriacao) {
+            // Verifica se já passou pelo menos uma semana desde a última atualização
+            const ultimaAtualizacao = habit.atualizado_em ? new Date(habit.atualizado_em.split('T')[0] + 'T00:00:00') : dataCriacao;
+            const diffDias = Math.floor((hoje - ultimaAtualizacao) / (1000 * 60 * 60 * 24));
+            if (diffDias >= 7) {
+              shouldReset = true;
+            }
+          }
+          break;
+          
+        case 'mensal':
+          // Para mensais, verifica se hoje é o mesmo dia do mês da criação
+          const diaDoMes = dataCriacao.getDate();
+          const diaDoMesHoje = hoje.getDate();
+          
+          // Se o dia do mês atual é o mesmo da criação
+          if (diaDoMesHoje === diaDoMes && hoje > dataCriacao) {
+            // Verifica se já passou pelo menos um mês desde a última atualização
+            const ultimaAtualizacao = habit.atualizado_em ? new Date(habit.atualizado_em.split('T')[0] + 'T00:00:00') : dataCriacao;
+            const diffMeses = (hoje.getFullYear() - ultimaAtualizacao.getFullYear()) * 12 + 
+                              (hoje.getMonth() - ultimaAtualizacao.getMonth());
+            if (diffMeses >= 1) {
+              shouldReset = true;
+            }
+          }
+          break;
+      }
+      
+      // Se deve resetar, desmarca o hábito
+      if (shouldReset) {
+        console.log(`🔄 Resetando hábito: ${habit.titulo}`);
+        await API.toggleHabitComplete(habit.id);
+      }
     }
   },
 
@@ -513,6 +597,56 @@ const JournalManager = {
     }
   },
 
+  openEditModal(id) {
+    const entry = AppState.journalEntries.find((e) => e.id === id);
+    if (entry) {
+      AppState.editingJournalId = id;
+      DOM.editJournalContent.value = entry.conteudo;
+      UI.openModal(DOM.editJournalModal);
+    }
+  },
+
+  async update(id, content) {
+    const entry = AppState.journalEntries.find((e) => e.id === id);
+    if (!entry) return;
+
+    // Normaliza a data para YYYY-MM-DD (caso venha do banco com timestamp)
+    let dataNormalizada = entry.data;
+    if (typeof dataNormalizada === 'string') {
+      dataNormalizada = dataNormalizada.split('T')[0];
+    }
+
+    const updateData = {
+      conteudo: content,
+      data: dataNormalizada,
+    };
+
+    const response = await API.updateJournalEntry(id, updateData);
+
+    if (response.success) {
+      await this.load();
+      Utils.showToast("Entrada atualizada com sucesso!");
+    } else {
+      Utils.showToast("Erro ao atualizar entrada: " + response.error, "error");
+    }
+  },
+
+  openDeleteModal(id) {
+    AppState.deletingJournalId = id;
+    UI.openModal(DOM.deleteJournalModal);
+  },
+
+  async delete(id) {
+    const response = await API.deleteJournalEntry(id, AppState.user.id);
+
+    if (response.success) {
+      await this.load();
+      Utils.showToast("Entrada excluída com sucesso!");
+    } else {
+      Utils.showToast("Erro ao excluir entrada: " + response.error, "error");
+    }
+  },
+
   clear() {
     DOM.journalTextarea.value = "";
   },
@@ -540,7 +674,17 @@ const JournalManager = {
       const entryEl = document.createElement("div");
       entryEl.className = "journal-history-item";
       entryEl.innerHTML = `
-                <div class="date">${Utils.formatDate(entry.data)}</div>
+                <div class="journal-entry-header">
+                    <div class="date">${Utils.formatDate(entry.data)}</div>
+                    <div class="journal-entry-actions">
+                        <button class="icon-btn" onclick="JournalManager.openEditModal(${entry.id})" aria-label="Editar entrada">
+                            <i class='bx bx-edit'></i>
+                        </button>
+                        <button class="icon-btn delete" onclick="JournalManager.openDeleteModal(${entry.id})" aria-label="Excluir entrada">
+                            <i class='bx bx-trash'></i>
+                        </button>
+                    </div>
+                </div>
                 <div class="content">${entry.conteudo}</div>
             `;
       DOM.journalHistory.appendChild(entryEl);
@@ -840,7 +984,7 @@ const UI = {
 
   setupModals() {
     // Garante que modais comecem escondidos
-    [DOM.habitModal, DOM.deleteModal].forEach((modal) => {
+    [DOM.habitModal, DOM.deleteModal, DOM.logoutModal, DOM.deleteJournalModal, DOM.editJournalModal].forEach((modal) => {
       if (modal) {
         modal.style.display = "none";
         modal.classList.remove("active", "show");
@@ -849,32 +993,82 @@ const UI = {
 
     DOM.addHabitBtn.addEventListener("click", () => this.openHabitModal());
 
+    // Habit Modal
     DOM.closeModal.addEventListener("click", () =>
       this.closeModal(DOM.habitModal)
     );
     DOM.cancelModal.addEventListener("click", () =>
       this.closeModal(DOM.habitModal)
     );
+
+    // Delete Habit Modal
     DOM.closeDeleteModal.addEventListener("click", () =>
       this.closeModal(DOM.deleteModal)
     );
     DOM.cancelDelete.addEventListener("click", () =>
       this.closeModal(DOM.deleteModal)
     );
-
-    [DOM.habitModal, DOM.deleteModal].forEach((modal) => {
-      modal.addEventListener("click", (e) => {
-        if (e.target === modal) {
-          this.closeModal(modal);
-        }
-      });
-    });
-
     DOM.confirmDelete.addEventListener("click", () => {
       if (AppState.deletingHabitId) {
         HabitsManager.delete(AppState.deletingHabitId);
         this.closeModal(DOM.deleteModal);
         AppState.deletingHabitId = null;
+      }
+    });
+
+    // Logout Modal
+    DOM.closeLogoutModal.addEventListener("click", () =>
+      this.closeModal(DOM.logoutModal)
+    );
+    DOM.cancelLogout.addEventListener("click", () =>
+      this.closeModal(DOM.logoutModal)
+    );
+    DOM.confirmLogout.addEventListener("click", () => {
+      Auth.logout();
+    });
+
+    // Delete Journal Modal
+    DOM.closeDeleteJournalModal.addEventListener("click", () =>
+      this.closeModal(DOM.deleteJournalModal)
+    );
+    DOM.cancelDeleteJournal.addEventListener("click", () =>
+      this.closeModal(DOM.deleteJournalModal)
+    );
+    DOM.confirmDeleteJournal.addEventListener("click", () => {
+      if (AppState.deletingJournalId) {
+        JournalManager.delete(AppState.deletingJournalId);
+        this.closeModal(DOM.deleteJournalModal);
+        AppState.deletingJournalId = null;
+      }
+    });
+
+    // Edit Journal Modal
+    DOM.closeEditJournalModal.addEventListener("click", () =>
+      this.closeModal(DOM.editJournalModal)
+    );
+    DOM.cancelEditJournal.addEventListener("click", () =>
+      this.closeModal(DOM.editJournalModal)
+    );
+    DOM.editJournalForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      if (AppState.editingJournalId) {
+        const content = DOM.editJournalContent.value.trim();
+        if (content) {
+          JournalManager.update(AppState.editingJournalId, content);
+          this.closeModal(DOM.editJournalModal);
+          AppState.editingJournalId = null;
+        }
+      }
+    });
+
+    // Click outside to close
+    [DOM.habitModal, DOM.deleteModal, DOM.logoutModal, DOM.deleteJournalModal, DOM.editJournalModal].forEach((modal) => {
+      if (modal) {
+        modal.addEventListener("click", (e) => {
+          if (e.target === modal) {
+            this.closeModal(modal);
+          }
+        });
       }
     });
   },
@@ -951,9 +1145,7 @@ const UI = {
     });
 
     DOM.logoutBtn.addEventListener("click", () => {
-      if (confirm("Deseja realmente sair?")) {
-        Auth.logout();
-      }
+      UI.openModal(DOM.logoutModal);
     });
 
     // Profile form
@@ -1076,6 +1268,44 @@ const App = {
 };
 
 // ============================================
+// Keep-Alive para evitar hibernação do Railway
+// ============================================
+const KeepAlive = {
+  intervalId: null,
+  
+  start() {
+    // Faz a primeira requisição imediatamente
+    this.ping();
+    
+    // Configura intervalo de 9 minutos e 30 segundos (570000ms)
+    this.intervalId = setInterval(() => {
+      this.ping();
+    }, 570000);
+    
+    console.log('✅ Keep-alive iniciado (intervalo: 9min30s)');
+  },
+  
+  async ping() {
+    try {
+      const response = await API.keepAlive();
+      if (response.success) {
+        console.log('🏓 Keep-alive ping enviado com sucesso');
+      }
+    } catch (error) {
+      console.warn('⚠️ Erro no keep-alive ping:', error);
+    }
+  },
+  
+  stop() {
+    if (this.intervalId) {
+      clearInterval(this.intervalId);
+      this.intervalId = null;
+      console.log('🛑 Keep-alive parado');
+    }
+  }
+};
+
+// ============================================
 // Start App
 // ============================================
 document.addEventListener("DOMContentLoaded", () => {
@@ -1093,4 +1323,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }, 10000);
 
   App.init();
+  
+  // Inicia keep-alive após o app estar rodando
+  KeepAlive.start();
 });
