@@ -3,6 +3,15 @@
 // ============================================
 
 // ============================================
+// Cloudinary Configuration
+// ============================================
+const CLOUDINARY_CONFIG = {
+  cloudName: 'dqaayvyhw',
+  uploadPreset: 'oasis_profiles',
+  folder: 'oasis_profiles'
+};
+
+// ============================================
 // App State & Configuration
 // ============================================
 const AppState = {
@@ -98,6 +107,7 @@ const DOM = {
   profileName: document.getElementById("profileName"),
   profileEmail: document.getElementById("profileEmail"),
   profileAvatarLarge: document.getElementById("profileAvatarLarge"),
+  profilePhotoInput: document.getElementById("profilePhotoInput"),
   profileForm: document.getElementById("profileForm"),
   profileNameInput: document.getElementById("profileNameInput"),
   profileEmailInput: document.getElementById("profileEmailInput"),
@@ -700,6 +710,121 @@ const JournalManager = {
 };
 
 // ============================================
+// Image Upload Manager
+// ============================================
+const ImageUploader = {
+  async uploadToCloudinary(file) {
+    try {
+      // Valida o arquivo
+      if (!file.type.startsWith('image/')) {
+        throw new Error('Arquivo deve ser uma imagem');
+      }
+
+      // Limita tamanho a 5MB
+      if (file.size > 5 * 1024 * 1024) {
+        throw new Error('Imagem deve ter no máximo 5MB');
+      }
+
+      // Comprime a imagem antes de enviar
+      const compressedFile = await this.compressImage(file);
+
+      // Prepara o FormData para upload
+      const formData = new FormData();
+      formData.append('file', compressedFile);
+      formData.append('upload_preset', CLOUDINARY_CONFIG.uploadPreset);
+      formData.append('folder', CLOUDINARY_CONFIG.folder);
+
+      // Faz o upload para Cloudinary
+      const response = await fetch(
+        `https://api.cloudinary.com/v1_1/${CLOUDINARY_CONFIG.cloudName}/image/upload`,
+        {
+          method: 'POST',
+          body: formData
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error('Erro ao fazer upload da imagem');
+      }
+
+      const data = await response.json();
+      return data.secure_url; // URL da imagem
+
+    } catch (error) {
+      console.error('Erro no upload:', error);
+      throw error;
+    }
+  },
+
+  async compressImage(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      
+      reader.onload = (e) => {
+        const img = new Image();
+        
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          const ctx = canvas.getContext('2d');
+          
+          // Define tamanho máximo
+          const MAX_WIDTH = 500;
+          const MAX_HEIGHT = 500;
+          
+          let width = img.width;
+          let height = img.height;
+          
+          // Redimensiona mantendo proporção
+          if (width > height) {
+            if (width > MAX_WIDTH) {
+              height *= MAX_WIDTH / width;
+              width = MAX_WIDTH;
+            }
+          } else {
+            if (height > MAX_HEIGHT) {
+              width *= MAX_HEIGHT / height;
+              height = MAX_HEIGHT;
+            }
+          }
+          
+          canvas.width = width;
+          canvas.height = height;
+          
+          // Desenha a imagem redimensionada
+          ctx.drawImage(img, 0, 0, width, height);
+          
+          // Converte para Blob com qualidade 0.8
+          canvas.toBlob((blob) => {
+            resolve(new File([blob], file.name, {
+              type: 'image/jpeg',
+              lastModified: Date.now()
+            }));
+          }, 'image/jpeg', 0.8);
+        };
+        
+        img.onerror = reject;
+        img.src = e.target.result;
+      };
+      
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  },
+
+  showPreview(file, targetElement) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      // Remove iniciais e mostra imagem
+      targetElement.style.backgroundImage = `url(${e.target.result})`;
+      targetElement.style.backgroundSize = 'cover';
+      targetElement.style.backgroundPosition = 'center';
+      targetElement.textContent = '';
+    };
+    reader.readAsDataURL(file);
+  }
+};
+
+// ============================================
 // Profile Management
 // ============================================
 const ProfileManager = {
@@ -711,8 +836,21 @@ const ProfileManager = {
     DOM.profileName.textContent = user.nome || "Usuário";
     DOM.profileEmail.textContent = user.email || "";
 
-    const initials = Utils.getInitials(user.nome || "");
-    DOM.profileAvatarLarge.textContent = initials || "U";
+    // Exibe foto ou iniciais
+    if (user.foto_perfil) {
+      DOM.profileAvatarLarge.style.backgroundImage = `url(${user.foto_perfil})`;
+      DOM.profileAvatarLarge.style.backgroundSize = 'cover';
+      DOM.profileAvatarLarge.style.backgroundPosition = 'center';
+      DOM.profileAvatarLarge.style.color = 'transparent';
+      DOM.profileAvatarLarge.textContent = '';
+    } else {
+      DOM.profileAvatarLarge.style.backgroundImage = '';
+      DOM.profileAvatarLarge.style.backgroundSize = '';
+      DOM.profileAvatarLarge.style.backgroundPosition = '';
+      DOM.profileAvatarLarge.style.color = '';
+      const initials = Utils.getInitials(user.nome || "");
+      DOM.profileAvatarLarge.textContent = initials || "U";
+    }
 
     // Preenche formulário
     DOM.profileNameInput.value = user.nome || "";
@@ -749,8 +887,20 @@ const ProfileManager = {
 
         // Atualiza header principal
         DOM.userName.textContent = updatedUser.nome;
-        const initials = Utils.getInitials(updatedUser.nome);
-        DOM.avatar.textContent = initials;
+        if (updatedUser.foto_perfil) {
+          DOM.avatar.style.backgroundImage = `url(${updatedUser.foto_perfil})`;
+          DOM.avatar.style.backgroundSize = 'cover';
+          DOM.avatar.style.backgroundPosition = 'center';
+          DOM.avatar.style.color = 'transparent';
+          DOM.avatar.textContent = '';
+        } else {
+          DOM.avatar.style.backgroundImage = '';
+          DOM.avatar.style.backgroundSize = '';
+          DOM.avatar.style.backgroundPosition = '';
+          DOM.avatar.style.color = '';
+          const initials = Utils.getInitials(updatedUser.nome);
+          DOM.avatar.textContent = initials;
+        }
 
         // Recarrega página de perfil
         this.load();
@@ -1177,6 +1327,58 @@ const UI = {
     DOM.cancelProfileBtn.addEventListener("click", () => {
       ProfileManager.cancel();
     });
+
+    // Upload de foto de perfil
+    DOM.profilePhotoInput.addEventListener("change", async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      try {
+        Utils.showLoading();
+        
+        // Mostra preview imediato
+        ImageUploader.showPreview(file, DOM.profileAvatarLarge);
+        
+        // Faz upload para Cloudinary
+        const imageUrl = await ImageUploader.uploadToCloudinary(file);
+        
+        // Atualiza no banco de dados
+        const response = await API.updateUser(AppState.user.id, {
+          foto_perfil: imageUrl
+        });
+
+        if (response.success) {
+          // Atualiza estado local
+          AppState.user.foto_perfil = imageUrl;
+          Auth.saveUser(AppState.user);
+          
+          // Atualiza avatar do header
+          const headerAvatar = DOM.avatar;
+          if (headerAvatar) {
+            headerAvatar.style.backgroundImage = `url(${imageUrl})`;
+            headerAvatar.style.backgroundSize = 'cover';
+            headerAvatar.style.backgroundPosition = 'center';
+            headerAvatar.textContent = '';
+          }
+          
+          Utils.showToast('Foto de perfil atualizada com sucesso!');
+        } else {
+          throw new Error(response.error || 'Erro ao atualizar foto');
+        }
+        
+        Utils.hideLoading();
+      } catch (error) {
+        console.error('Erro ao fazer upload da foto:', error);
+        Utils.showToast(error.message || 'Erro ao fazer upload da foto', 'error');
+        Utils.hideLoading();
+        
+        // Reverte preview em caso de erro
+        ProfileManager.load();
+      }
+      
+      // Limpa o input
+      e.target.value = '';
+    });
   },
 };
 
@@ -1214,11 +1416,23 @@ const App = {
 
       // Atualiza nome do usuário no header
       DOM.userName.textContent = AppState.user.nome || "Usuário";
-      // Preenche avatar com iniciais (primeira letra do nome + primeira do sobrenome, se houver)
+      // Preenche avatar com foto ou iniciais
       try {
         if (DOM.avatar) {
-          const initials = Utils.getInitials(AppState.user.nome || "");
-          DOM.avatar.textContent = initials || "U";
+          if (AppState.user.foto_perfil) {
+            DOM.avatar.style.backgroundImage = `url(${AppState.user.foto_perfil})`;
+            DOM.avatar.style.backgroundSize = 'cover';
+            DOM.avatar.style.backgroundPosition = 'center';
+            DOM.avatar.style.color = 'transparent';
+            DOM.avatar.textContent = '';
+          } else {
+            DOM.avatar.style.backgroundImage = '';
+            DOM.avatar.style.backgroundSize = '';
+            DOM.avatar.style.backgroundPosition = '';
+            DOM.avatar.style.color = '';
+            const initials = Utils.getInitials(AppState.user.nome || "");
+            DOM.avatar.textContent = initials || "U";
+          }
           DOM.avatar.setAttribute("title", AppState.user.nome || "Usuário");
         }
       } catch (err) {
@@ -1268,44 +1482,6 @@ const App = {
 };
 
 // ============================================
-// Keep-Alive para evitar hibernação do Railway
-// ============================================
-const KeepAlive = {
-  intervalId: null,
-  
-  start() {
-    // Faz a primeira requisição imediatamente
-    this.ping();
-    
-    // Configura intervalo de 9 minutos e 30 segundos (570000ms)
-    this.intervalId = setInterval(() => {
-      this.ping();
-    }, 570000);
-    
-    console.log('✅ Keep-alive iniciado (intervalo: 9min30s)');
-  },
-  
-  async ping() {
-    try {
-      const response = await API.keepAlive();
-      if (response.success) {
-        console.log('🏓 Keep-alive ping enviado com sucesso');
-      }
-    } catch (error) {
-      console.warn('⚠️ Erro no keep-alive ping:', error);
-    }
-  },
-  
-  stop() {
-    if (this.intervalId) {
-      clearInterval(this.intervalId);
-      this.intervalId = null;
-      console.log('🛑 Keep-alive parado');
-    }
-  }
-};
-
-// ============================================
 // Start App
 // ============================================
 document.addEventListener("DOMContentLoaded", () => {
@@ -1323,7 +1499,4 @@ document.addEventListener("DOMContentLoaded", () => {
   }, 10000);
 
   App.init();
-  
-  // Inicia keep-alive após o app estar rodando
-  KeepAlive.start();
 });

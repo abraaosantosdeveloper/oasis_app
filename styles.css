@@ -763,6 +763,13 @@ body {
     margin-bottom: var(--spacing-xl);
 }
 
+.profile-avatar-container {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    margin: 0 auto var(--spacing-lg);
+}
+
 .profile-avatar-large {
     width: 100px;
     height: 100px;
@@ -774,7 +781,34 @@ body {
     justify-content: center;
     font-weight: 700;
     font-size: 2rem;
-    margin: 0 auto var(--spacing-lg);
+    position: relative;
+}
+
+.upload-photo-btn {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 36px;
+    height: 36px;
+    background: var(--primary-color);
+    color: white;
+    border-radius: var(--radius-full);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: var(--shadow-md);
+    transition: all var(--transition-base);
+    border: 3px solid var(--bg-secondary);
+}
+
+.upload-photo-btn:hover {
+    background: var(--primary-dark);
+    transform: scale(1.1);
+}
+
+.upload-photo-btn i {
+    font-size: 1.25rem;
 }
 
 .profile-header h3 {
