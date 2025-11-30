@@ -1662,6 +1662,112 @@ body {
     .logout-btn i {
         font-size: 1.25rem;
     }
+
+    /* Profile Avatar */
+    .profile-avatar-container {
+        width: 80px;
+        height: 80px;
+    }
+
+    .profile-avatar-large {
+        font-size: 1.5rem;
+    }
+
+    .upload-photo-btn {
+        width: 30px;
+        height: 30px;
+        border-width: 2px;
+    }
+
+    .upload-photo-btn i {
+        font-size: 1rem;
+    }
+
+    .profile-header h3 {
+        font-size: 1.25rem;
+    }
+
+    .profile-header p {
+        font-size: 0.875rem;
+    }
+}
+
+/* Extra Small Devices (< 400px) */
+@media (max-width: 400px) {
+    /* Avatar do Header */
+    .avatar {
+        width: 35px;
+        height: 35px;
+        font-size: 0.875rem;
+    }
+
+    .user-info span {
+        font-size: 0.875rem;
+    }
+
+    /* Profile Avatar */
+    .profile-avatar-container {
+        width: 70px;
+        height: 70px;
+    }
+
+    .profile-avatar-large {
+        font-size: 1.25rem;
+    }
+
+    .upload-photo-btn {
+        width: 28px;
+        height: 28px;
+        border-width: 2px;
+    }
+
+    .upload-photo-btn i {
+        font-size: 0.875rem;
+    }
+
+    .profile-header {
+        padding: var(--spacing-lg);
+    }
+
+    .profile-header h3 {
+        font-size: 1.125rem;
+    }
+
+    .profile-header p {
+        font-size: 0.8125rem;
+    }
+
+    /* Form Groups */
+    .form-group label {
+        font-size: 0.875rem;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        font-size: 0.875rem;
+        padding: var(--spacing-sm) var(--spacing-md);
+    }
+
+    /* Buttons */
+    .btn {
+        padding: var(--spacing-sm) var(--spacing-md);
+        font-size: 0.875rem;
+    }
+
+    /* Page Header */
+    .page-header h2 {
+        font-size: 1.25rem;
+    }
+
+    /* Header */
+    .header-info h2 {
+        font-size: 1.25rem;
+    }
+
+    .header-info p {
+        font-size: 0.8125rem;
+    }
 }
 
 /* Accessibility */
