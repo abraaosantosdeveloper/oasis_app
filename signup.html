@@ -230,8 +230,6 @@
             <p>Crie sua conta e comece sua jornada de hábitos saudáveis!</p>
         </div>
 
-        <div id="alertBox" class="alert"></div>
-
         <form id="signupForm">
             <div class="form-group">
                 <label for="name">Nome Completo <span class="required">*</span></label>
@@ -271,7 +269,7 @@
                     <label for="age">Idade</label>
                     <div class="input-wrapper">
                         <i class='bx bx-calendar-check'></i>
-                        <input type="number" id="age" name="age" placeholder="Ex: 25" min="13" max="120">
+                        <input type="number" id="age" name="age" placeholder="Calculada automaticamente" min="13" max="120" readonly>
                     </div>
                 </div>
             </div>
@@ -301,6 +299,33 @@
         </div>
     </div>
 
+    <script>
+        // Função para calcular idade a partir da data de nascimento
+        function calculateAge(birthDate) {
+            if (!birthDate) return null;
+            const today = new Date();
+            const birth = new Date(birthDate);
+            let age = today.getFullYear() - birth.getFullYear();
+            const monthDiff = today.getMonth() - birth.getMonth();
+            if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+                age--;
+            }
+            return age;
+        }
+
+        // Auto-calcular idade quando data de nascimento mudar
+        document.addEventListener('DOMContentLoaded', () => {
+            const birthDateInput = document.getElementById('birthDate');
+            const ageInput = document.getElementById('age');
+            
+            if (birthDateInput && ageInput) {
+                birthDateInput.addEventListener('change', () => {
+                    const age = calculateAge(birthDateInput.value);
+                    ageInput.value = age !== null ? age : '';
+                });
+            }
+        });
+    </script>
     <script src="api.js"></script>
     <script src="auth.js"></script>
 </body>

@@ -115,6 +115,7 @@ const DOM = {
   profileAge: document.getElementById("profileAge"),
   profileGender: document.getElementById("profileGender"),
   profilePassword: document.getElementById("profilePassword"),
+  profileAlertBox: document.getElementById("profileAlertBox"),
   cancelProfileBtn: document.getElementById("cancelProfileBtn"),
 };
 
@@ -855,10 +856,93 @@ const ProfileManager = {
     // Preenche formulário
     DOM.profileNameInput.value = user.nome || "";
     DOM.profileEmailInput.value = user.email || "";
-    DOM.profileBirthDate.value = user.data_nasc || "";
-    DOM.profileAge.value = user.idade || "";
+    
+    // Formata data de nascimento para o formato YYYY-MM-DD
+    if (user.data_nasc) {
+      try {
+        // Se já está no formato YYYY-MM-DD, usa diretamente
+        const dateStr = String(user.data_nasc);
+        if (/^\d{4}-\d{2}-\d{2}/.test(dateStr)) {
+          DOM.profileBirthDate.value = dateStr.substring(0, 10);
+        } else {
+          // Caso contrário, converte para Date
+          const date = new Date(user.data_nasc);
+          if (!isNaN(date.getTime())) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            DOM.profileBirthDate.value = `${year}-${month}-${day}`;
+          } else {
+            DOM.profileBirthDate.value = "";
+          }
+        }
+      } catch (e) {
+        DOM.profileBirthDate.value = "";
+      }
+    } else {
+      DOM.profileBirthDate.value = "";
+    }
+    
+    // Calcula e exibe idade automaticamente
+    if (user.data_nasc) {
+      const age = ProfileManager.calculateAge(user.data_nasc);
+      DOM.profileAge.value = age !== null ? age : "";
+    } else {
+      DOM.profileAge.value = user.idade || "";
+    }
+    
     DOM.profileGender.value = user.sexo || "";
     DOM.profilePassword.value = "";
+    
+    // Adiciona listener para auto-calcular idade quando data mudar
+    DOM.profileBirthDate.addEventListener('change', function() {
+      const age = ProfileManager.calculateAge(DOM.profileBirthDate.value);
+      DOM.profileAge.value = age !== null ? age : '';
+    });
+  },
+
+  calculateAge(birthDate) {
+    if (!birthDate) return null;
+    const today = new Date();
+    const birth = new Date(birthDate);
+    let age = today.getFullYear() - birth.getFullYear();
+    const monthDiff = today.getMonth() - birth.getMonth();
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+      age--;
+    }
+    return age;
+  },
+
+  showAlert(message, type = 'success') {
+    // Define ID baseado no tipo para o perfil
+    const toastId = type === 'success' ? 'profileToastSuccess' : 'profileToastError';
+    const otherToastId = type === 'success' ? 'profileToastError' : 'profileToastSuccess';
+    
+    // Esconde o toast do outro tipo se estiver visível
+    const otherToast = document.getElementById(otherToastId);
+    if (otherToast) {
+      otherToast.classList.remove('show');
+    }
+    
+    // Cria ou pega o elemento de toast específico
+    let toast = document.getElementById(toastId);
+    if (!toast) {
+      toast = document.createElement('div');
+      toast.id = toastId;
+      const typeClass = type === 'success' ? 'profile-alert-toast-success' : 'profile-alert-toast-error';
+      toast.className = `profile-alert-toast ${typeClass}`;
+      document.body.appendChild(toast);
+    }
+
+    // Define ícone baseado no tipo
+    const icon = type === 'success' ? 'bx-check-circle' : 'bx-error-circle';
+    toast.innerHTML = `<i class='bx ${icon}'></i><span>${message}</span>`;
+    
+    // Mostra o toast
+    setTimeout(() => toast.classList.add('show'), 10);
+    
+    // Remove após 4 segundos
+    setTimeout(() => toast.classList.remove('show'), 4000);
   },
 
   async save(profileData) {
@@ -869,19 +953,25 @@ const ProfileManager = {
         email: profileData.email,
       };
 
-      if (profileData.data_nasc) updateData.data_nasc = profileData.data_nasc;
-      if (profileData.idade) updateData.idade = parseInt(profileData.idade);
+      if (profileData.data_nasc) {
+        updateData.data_nasc = profileData.data_nasc;
+        // Calcula idade automaticamente a partir da data de nascimento
+        const calculatedAge = this.calculateAge(profileData.data_nasc);
+        if (calculatedAge !== null) {
+          updateData.idade = calculatedAge;
+        }
+      }
       if (profileData.sexo) updateData.sexo = profileData.sexo;
       if (profileData.senha && profileData.senha.length >= 6) {
         updateData.senha = profileData.senha;
       }
 
-      // Chama API para atualizar usuário (assumindo endpoint PUT /api/users/:id)
+      // Chama API para atualizar usuário
       const response = await API.updateUser(AppState.user.id, updateData);
 
       if (response.success) {
-        // Atualiza dados locais
-        const updatedUser = { ...AppState.user, ...updateData };
+        // Usa os dados retornados pela API (vem do banco de dados)
+        const updatedUser = response.data.usuario;
         AppState.user = updatedUser;
         Auth.saveUser(updatedUser);
 
@@ -905,13 +995,13 @@ const ProfileManager = {
         // Recarrega página de perfil
         this.load();
 
-        Utils.showToast("Perfil atualizado com sucesso!");
+        this.showAlert('Perfil atualizado com sucesso!', 'success');
       } else {
-        Utils.showToast("Erro ao atualizar perfil: " + response.error, "error");
+        this.showAlert(response.error || 'Erro ao atualizar perfil', 'error');
       }
     } catch (error) {
       console.error("Erro ao salvar perfil:", error);
-      Utils.showToast("Erro ao atualizar perfil", "error");
+      this.showAlert('Erro ao conectar com o servidor', 'error');
     }
   },
 
